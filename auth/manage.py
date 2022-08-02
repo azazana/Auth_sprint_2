@@ -10,17 +10,17 @@ from utils.partition_user_sign_in import create_partition_year
 from utils.ratelimiter import over_limit_multi_lua
 from flask import abort
 
-app.register_blueprint(auth_blueprint, url_prefix="/v1")
-app.register_blueprint(oauth_blueprint, url_prefix="/v1")
-app.register_blueprint(role_blueprint, url_prefix="/v1")
+app.register_blueprint(auth_blueprint, url_prefix="/auth/v1")
+app.register_blueprint(oauth_blueprint, url_prefix="/auth/v1")
+app.register_blueprint(role_blueprint, url_prefix="/auth/v1")
 cli = FlaskGroup(app)
 
 
-# @cli.command("create_db")
-# def create_db():
-#     db.drop_all()
-#     db.create_all()
-#     db.session.commit()
+@cli.command("create_db")
+def create_db():
+    db.drop_all()
+    db.create_all()
+    db.session.commit()
 
 
 @cli.command("create_partition_year")
