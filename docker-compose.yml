@@ -1,0 +1,41 @@
+version: '3'
+
+services:
+  postgres: 
+    container_name: "auth_postgres"
+    image: postgres:14.2 
+    environment: 
+      POSTGRES_DB: ${POSTGRES_DB} 
+      POSTGRES_USER: ${POSTGRES_USER} 
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    ports: 
+      - ${POSTGRES_PORT}:${POSTGRES_PORT} 
+  redis:
+    container_name: "auth_redis"
+    image: redis:7.0.2
+    environment:
+      REDIS_HOST: ${REDIS_HOST}
+      REDIS_PORT: ${REDIS_PORT}
+  nginx:
+    container_name: "auth_nginx"
+    build: ./nginx
+    ports:
+      - 5005:80
+    depends_on:
+      - auth
+  auth:
+    container_name: "auth_auth"
+    build: ./auth
+    expose:
+      - 5000
+    env_file:
+      - ./.env.example
+    depends_on:
+      - redis
+      - postgres
+  jaeger:
+    container_name: "auth_jaeger"
+    image: jaegertracing/all-in-one:latest
+    ports:
+      - 6831:6831/udp
+      - 16686:16686

@@ -1,0 +1,39 @@
+version: '3'
+
+services:
+  auth:
+    container_name: "test_auth"
+    build: ./auth
+    env_file:
+      - ./.env.example
+    ports:
+      - 5000:5000
+    depends_on:
+      - postgres
+      - redis
+  tests:
+    container_name: "test_test"
+    build: ./auth
+    env_file:
+      - ./.env.example
+    entrypoint: >
+      sh -c "pip install -r ./tests/requirements.txt
+      && python3 ./tests/utils/wait_for_redis.py
+      && alembic upgrade head
+      && python3 ./manage.py create_superuser
+      && pytest -v ./tests"
+  redis:
+    container_name: "test_redis"
+    image: redis:7.0.2
+    environment:
+      REDIS_HOST: ${REDIS_HOST}
+      REDIS_PORT: ${REDIS_PORT}
+  postgres:
+    container_name: "test_postgres"
+    image: postgres:14.2
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    ports:
+      - ${POSTGRES_PORT}:${POSTGRES_PORT}
