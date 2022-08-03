@@ -25,7 +25,7 @@ def over_limit(
     return False
 
 
-def over_limit_multi_lua(conn, limits=[(1, 10), (60, 10), (3600, 250)]):
+def over_limit_multi_lua(conn, limits=[(1, 10), (60, 100), (3600, 250)]):
     """Rate limiting for 3 timespans and using 1 call to Redis with Lua script"""
     if not hasattr(conn, 'over_limit_multi_lua'):
         conn.over_limit_multi_lua = conn.register_script(over_limit_multi_lua_)

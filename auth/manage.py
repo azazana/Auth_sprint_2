@@ -33,22 +33,21 @@ def create_db(year):
 
 @cli.command("create_superuser")
 def create_superuser():
-    try:
-        role = Role(
-            name="admin"
-        )
-        db.session.add(role)
-        db.session.commit()
-        user = User(
-            name="admin",
-            email="admin@admin.ru",
-            password=generate_password_hash("admin")
-        )
-        user.roles = [role]
-        db.session.add(user)
-        db.session.commit()
-    except Exception:
-        pass
+
+    role = Role(
+        name="admin"
+    )
+    db.session.add(role)
+    db.session.commit()
+    user = User(
+        name="admin",
+        email="admin@admin.ru",
+        password=generate_password_hash("admin")
+    )
+    user.roles = [role]
+    db.session.add(user)
+    db.session.commit()
+
 
 
 @app.before_request

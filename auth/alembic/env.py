@@ -10,7 +10,10 @@ from alembic import context
 config = context.config
 
 # import config as ems_config
-config.set_main_option('sqlalchemy.url', os.environ.get('DOCKER_DATABASE_URI'))
+# print(os.environ.get('LOCALHOST_DATABASE_URI'))
+# config.set_main_option('sqlalchemy.url', os.environ.get('LOCALHOST_DATABASE_URI'))
+config.set_main_option('sqlalchemy.url', 'postgresql://admin:admin@localhost/auth')
+
 
 
 # Interpret the config file for Python logging.
@@ -20,9 +23,9 @@ if config.config_file_name is not None:
 
 # add your model's MetaData object here
 # for 'autogenerate' support
-from models import User
+from models import UserLoginHistory
 # target_metadata = mymodel.Base.metadata
-target_metadata = User.metadata
+target_metadata = UserLoginHistory.metadata
 
 # other values from the config, defined by the needs of env.py,
 # can be acquired:
