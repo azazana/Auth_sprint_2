@@ -1,0 +1,38 @@
+version: '3.2'
+
+services:
+  fastapi:
+    container_name: "test_fastapi"
+    build: ../../.
+    env_file:
+      - ./.env.example
+    ports:
+      - 8001:8000
+    depends_on:
+      - elasticsearch
+      - redis
+  tests:
+    container_name: "test_test"
+    build: ../../.
+    env_file:
+      - ./.env.example
+    entrypoint: >
+      sh -c "pip install -r ./tests/functional/requirements.txt
+      && python3 ./tests/functional/utils/wait_for_es.py
+      && python3 ./tests/functional/utils/wait_for_redis.py
+      && pytest -v ./tests/functional/src"
+  redis:
+    container_name: "test_redis"
+    image: redis:7.0.2
+    ports:
+      - 6379:6379
+  elasticsearch:
+    container_name: "test_elastic"
+    image: elasticsearch:7.7.0
+    environment:
+      - xpack.security.enabled=false
+      - "discovery.type=single-node"
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    ports:
+      - 9200:9200
+

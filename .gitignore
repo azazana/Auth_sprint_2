@@ -2,7 +2,7 @@
 .env.prod 
 .env.prod.db
 .idea
-postgres/data/
+postgres_movies/data/
 redis/
 
 # Byte-compiled / optimized / DLL files
