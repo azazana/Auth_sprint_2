@@ -74,6 +74,7 @@ class MyElasticsearch:
                 "properties": {
                     "id": {"type": "keyword"},
                     "imdb_rating": {"type": "float"},
+                    "premium": {"type": "bool"},
                     "genres": {
                         "type": "nested",
                         "dynamic": "strict",

@@ -20,6 +20,7 @@ class Film(BaseOrjsonModel):
     actors: Optional[list[Person]]
     writers: Optional[list[Person]]
     directors: Optional[list[Person]]
+    premium: bool
 
 
 class ListForChash(BaseModel):

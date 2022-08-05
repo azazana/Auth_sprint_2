@@ -64,6 +64,7 @@ class MyPostgres:
                     fw.description, \
                     fw.rating, \
                     fw.created, \
+                    1 as premium, \
                     fw.modified, \
                     COALESCE ( \
                         json_agg( \

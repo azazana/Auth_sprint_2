@@ -33,6 +33,7 @@ def transform_data_pg_in_es(index: str, data: list[dict]) -> list[dict]:
             "title": item["title"],
             "description": item["description"],
             "imdb_rating": item["rating"],
+            "premium": item["premium"],
             "genres": [
                 {"id": g["genre_id"], "name": g["name"]}
                 for g in item["genres"]
