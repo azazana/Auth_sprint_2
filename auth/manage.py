@@ -50,10 +50,10 @@ def create_superuser():
 
 
 
-@app.before_request
-def rate_limiter():
-    if over_limit_multi_lua(redis):
-        abort(429, description="Too many requests")
+# @app.before_request
+# def rate_limiter():
+#     if over_limit_multi_lua(redis):
+#         abort(429, description="Too many requests")
 
 
 if __name__ == '__main__':
