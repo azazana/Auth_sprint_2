@@ -22,6 +22,7 @@ auth = Blueprint('auth', __name__)
 
 
 @auth.route('/login', methods=['POST'])
+@rate_limit([(1, 10), (60, 10), (3600, 250)])
 def login_users():
     """login user by email and password
         login user by email and password.
@@ -68,6 +69,7 @@ def login_users():
 
 
 @auth.route('/signup', methods=['POST'])
+@rate_limit([(1, 10), (60, 10), (3600, 250)])
 def signup_users():
     """signup user by email and password and name
         signup user by email and password and name.
@@ -106,6 +108,7 @@ def signup_users():
 @auth.route('/logout', methods=['POST'])
 @jwt_required()
 @check_logout_user
+@rate_limit([(1, 10), (60, 10), (3600, 250)])
 def logout_users():
     """logout user in system
         logout user with correctly jwt token,
@@ -140,6 +143,7 @@ def logout_users():
 @auth.route("/refresh", methods=["POST"])
 @jwt_required(refresh=True)
 @check_logout_user
+@rate_limit([(1, 10), (60, 10), (3600, 250)])
 def refresh_tokens():
     """refresh jwt tokens user by fresh refresh token
         refresh jwt tokens user by fresh refresh token
@@ -163,6 +167,7 @@ def refresh_tokens():
 @auth.route("/profile/login_history", methods=["GET"])
 @jwt_required()
 @check_logout_user
+@rate_limit([(1, 10), (60, 10), (3600, 250)])
 def profile_user_login_history():
     """get user login history
         get user login history by fresh access token
@@ -203,6 +208,7 @@ def profile_user_login_history():
 @auth.route("/profile", methods=["PUT"])
 @jwt_required()
 @check_logout_user
+@rate_limit([(1, 10), (60, 10), (3600, 250)])
 def profile_user_edit():
     """edit data user: email or/and password or/and name
         edit data user: email or/and password or/and name
