@@ -13,12 +13,12 @@ logger = logging.getLogger()
 class Settings(BaseSettings):
     # Название проекта. Используется в Swagger-документации
     PROJECT_NAME: str = "movies"
-
-    REDIS_HOST: str = "127.0.0.1"
     REDIS_PORT: int = 6379
+    REDIS_HOST: str = "127.0.0.1"
 
-    ELASTIC_HOST: str = "127.0.0.1"
     ELASTIC_PORT: int = 9200
+    ELASTIC_HOST: str = "127.0.0.1"
+
 
     CACHE_EXPIRE: int = 60 * 5  # 5 минут
 
