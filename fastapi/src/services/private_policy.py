@@ -5,17 +5,21 @@ from fastapi import HTTPException
 import aiohttp
 
 URL_CHECK_ROLE = os.getenv("URL_CHECK_ROLE", "http://auth:5000/auth/v1/check_roles")
+DEFAULT_ROLES_LIST = ['guest', ]
 
 
 async def get_user_roles(token):
     session = aiohttp.ClientSession()
-    async with session.get(
-            URL_CHECK_ROLE,
-            headers={'Authorization': f'Bearer {token}'}
-    ) as response:
-        roles = await response.json()
-        await session.close()
-        return roles
+    try:
+        async with session.get(
+                URL_CHECK_ROLE,
+                headers={'Authorization': f'Bearer {token}'}
+        ) as response:
+            roles = await response.json()
+            await session.close()
+            return roles
+    except:
+        return DEFAULT_ROLES_LIST
 
 
 def check_role_user(role: str):
