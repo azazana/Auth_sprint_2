@@ -15,7 +15,8 @@ async def test_signup(make_post_request):
     )
 
     assert response.status == HTTPStatus.OK
-    assert response.body == {'msg': 'signup success'}
+    # assert response.body == {'msg': 'signup success'}
+    assert response.body.get('msg') == 'signup success'
 
 
 async def test_signup_email_exists(make_post_request):

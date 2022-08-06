@@ -1,6 +1,6 @@
-# Проектная работа 6 спринта
+# Проектная работа 7 спринта
 
-https://github.com/azazana/Auth_sprint_1
+https://github.com/azazana/Auth_sprint_2
 
 **Груздев Александр aka @oocemb и Анна Борзенкова aka @azazana**
 
