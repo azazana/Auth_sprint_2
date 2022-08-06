@@ -35,6 +35,12 @@ def auth_users():
     user_agent = request.headers.get("User-Agent")
 
     create_user = create_new_user(email, name, password)
+    if create_user["msg"] == "email already exists":
+        identity = JWTIdentity(
+            user_id=create_user["user_id"]
+        )
+
+        return jsonify(create_jwt_tokens(identity))
     if create_user["msg"] != "signup success":
         return jsonify(create_user)
 

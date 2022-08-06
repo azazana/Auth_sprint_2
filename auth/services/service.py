@@ -45,7 +45,8 @@ def create_new_user(email: str, name: str, password: str) -> Msg:
     if email and name and password:
         user = User.query.filter_by(email=email).first()
         if user:
-            return Msg(msg="email already exists")
+            # return Msg(msg="email already exists")
+            return {"msg": "email already exists", "user_id": user.id}
         new_user = User(
             email=email,
             name=name,

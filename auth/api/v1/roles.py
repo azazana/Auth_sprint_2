@@ -16,7 +16,7 @@ role = Blueprint('role', __name__)
 @role.route('/roles_name', methods=['DELETE'])
 @jwt_required()
 @authorize.has_role('admin')
-@rate_limit([(1, 10), (60, 10), (3600, 250)])
+@rate_limit([(1, 10), (60, 100), (3600, 250)])
 def delete_role() -> Response:
     """delete role by name
          delete role by name.
@@ -51,7 +51,7 @@ def delete_role() -> Response:
 @role.route('/roles', methods=['POST'])
 @jwt_required()
 @authorize.has_role('admin')
-@rate_limit([(1, 10), (60, 10), (3600, 250)])
+@rate_limit([(1, 10), (60, 100), (3600, 250)])
 def post_role() -> Response:
     """create role
        create role
@@ -85,7 +85,7 @@ def post_role() -> Response:
 @role.route('/roles_name', methods=['GET'])
 @jwt_required()
 @authorize.has_role('admin')
-@rate_limit([(1, 10), (60, 10), (3600, 250)])
+@rate_limit([(1, 10), (60, 100), (3600, 250)])
 def get_role() -> Response:
     """get role by name
        get role by name
@@ -119,7 +119,7 @@ def get_role() -> Response:
 @role.route('/roles', methods=['GET'])
 @jwt_required()
 @authorize.has_role('admin')
-@rate_limit([(1, 10), (60, 10), (3600, 250)])
+@rate_limit([(1, 10), (60, 100), (3600, 250)])
 def get_roles() -> Response:
     """get all roles
         Get all roles
@@ -154,7 +154,7 @@ def get_roles() -> Response:
 @role.route('/user_roles', methods=['PUT'])
 @jwt_required()
 @authorize.has_role('admin')
-@rate_limit([(1, 10), (60, 10), (3600, 250)])
+@rate_limit([(1, 10), (60, 100), (3600, 250)])
 def put_user_role() -> Response:
     """set role to user
        set role to user
@@ -192,7 +192,7 @@ def put_user_role() -> Response:
 @role.route('/user_roles_delete', methods=['PUT'])
 @jwt_required()
 @authorize.has_role('admin')
-@rate_limit([(1, 10), (60, 10), (3600, 250)])
+@rate_limit([(1, 10), (60, 100), (3600, 250)])
 def delete_user_role() -> Response:
     """delete role to user
        delete role to user
@@ -231,7 +231,7 @@ def delete_user_role() -> Response:
 @role.route('/user_roles', methods=['GET'])
 @jwt_required()
 @authorize.has_role('admin')
-@rate_limit([(1, 10), (60, 10), (3600, 250)])
+@rate_limit([(1, 10), (60, 100), (3600, 250)])
 def get_user_role() -> Response:
     """get user's roles
        get user's roles

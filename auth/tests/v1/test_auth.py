@@ -24,8 +24,8 @@ async def test_signup_email_exists(make_post_request):
     )
 
     assert response.status == HTTPStatus.OK
-    assert response.body == {'msg': 'email already exists'}
-
+    # assert response.body == {'msg': 'email already exists'}
+    assert response.body.get('msg') == 'email already exists'
 
 async def test_login(make_post_request):
     response = await make_post_request(
