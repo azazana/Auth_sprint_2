@@ -24,11 +24,11 @@ class PersonRole:
         self.WRITER = "writer"
 
 
-def random_premium() -> bool:
+def random_premium():
     if random.randint(1, 100) > 50:
-        return True
+        return 1
     else:
-        return False
+        return 0
 
 
 def transform_data_pg_in_es(index: str, data: list[dict]) -> list[dict]:
@@ -41,7 +41,7 @@ def transform_data_pg_in_es(index: str, data: list[dict]) -> list[dict]:
             "title": item["title"],
             "description": item["description"],
             "imdb_rating": item["rating"],
-            "premium": 1,
+            "premium": random_premium(),
             "genres": [
                 {"id": g["genre_id"], "name": g["name"]}
                 for g in item["genres"]
@@ -107,7 +107,7 @@ def transform_data_persons(index: str, data: list[dict]) -> list[dict]:
     return actions
 
 
-def main_loop_ETL(sleep: int, all_data: bool = False) -> None:
+def main_loop_ETL(elastic: MyElasticsearch, sleep: int, all_data: bool = False) -> None:
 
     PAGE_SIZE = int(os.environ.get("PAGE_SIZE"))
     dsl = {
@@ -126,13 +126,6 @@ def main_loop_ETL(sleep: int, all_data: bool = False) -> None:
     redis_s = RedisStorage(redis_client)
     state = State(redis_s)
     pg = MyPostgres(dsl=dsl, arraysize=PAGE_SIZE)
-    elastic = MyElasticsearch(
-        hosts=os.environ.get("ELASTIC_HOST")+':'+os.environ.get("ELASTIC_PORT"))
-
-    # init index
-    elastic.create_index_movies('movies')
-    elastic.create_index_genres('genres')
-    elastic.create_index_persons('persons')
 
     # loading all films data TODO: genres, persons
     if all_data:
@@ -153,8 +146,7 @@ def main_loop_ETL(sleep: int, all_data: bool = False) -> None:
         if not modified:
             modified = datetime.datetime.min
         date_now = datetime.datetime.utcnow()
-        # print('!!!!!!!!!!!!!!'+ datetime.datetime.min)
-        # modified = datetime.datetime.min
+
         # movies index load
         id_list = pg.get_modified_film_work_id_list(modified)
         if id_list:
@@ -205,7 +197,12 @@ def main_loop_ETL(sleep: int, all_data: bool = False) -> None:
 if __name__ == "__main__":
     logger.info("wait loading ES (20 sec)")
     time.sleep(20)
+    # init index
+    elastic = MyElasticsearch(
+        hosts=os.environ.get("ELASTIC_HOST")+':'+os.environ.get("ELASTIC_PORT"))
+    elastic.create_index_movies('movies')
+    elastic.create_index_genres('genres')
+    elastic.create_index_persons('persons')
     # TODO: не дублирующийся сервис (при случайном двойном запуске)
     while True:
-        main_loop_ETL(sleep=60)
-
+        main_loop_ETL(elastic=elastic, sleep=120)
