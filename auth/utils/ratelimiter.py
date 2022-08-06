@@ -2,9 +2,10 @@ import json
 import os
 import time
 
+from api import redis as redis_limit
 from flask import request, abort
 from redis import Redis
-from api import redis as redis_limit
+
 
 def get_identifier():
     return 'ip:' + request.remote_addr
@@ -25,6 +26,7 @@ def over_limit(
         return True
     return False
 
+
 def rate_limit(limits):
     def rate_limit_func(func):
         def over_limit_multi_lua():
@@ -37,9 +39,12 @@ def rate_limit(limits):
                     keys=get_identifier(), args=[json.dumps(limits), time.time()]):
                 abort(429, description="Too many requests")
             return func()
+
         over_limit_multi_lua.__name__ = func.__name__
         return over_limit_multi_lua
+
     return rate_limit_func
+
 
 # def decorator_rate_limit(func):
 #     def over_limit_multi_lua(redis, limits=[(1, 10), (60, 100), (3600, 250)]):

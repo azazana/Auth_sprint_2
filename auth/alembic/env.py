@@ -11,8 +11,9 @@ config = context.config
 
 # import config as ems_config
 # print(os.environ.get('LOCALHOST_DATABASE_URI'))
-# config.set_main_option('sqlalchemy.url', os.environ.get('LOCALHOST_DATABASE_URI'))
-config.set_main_option('sqlalchemy.url', 'postgresql://admin:admin@localhost/auth')
+# config.set_main_option('sqlalchemy.url', 'postgresql://admin:admin@localhost/auth')
+config.set_main_option('sqlalchemy.url', os.environ.get('DOCKER_DATABASE_URI',
+                                                        'postgresql://admin:admin@localhost/auth'))
 
 
 

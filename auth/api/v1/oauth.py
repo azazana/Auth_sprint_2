@@ -6,11 +6,13 @@ from utils.mail import send_mail
 from services.oauth_google import get_user_scope, authorization_url
 from services.service import (
     add_user_in_white_list,
+    add_user_login_history,
     check_login_user,
     create_jwt_tokens,
     create_new_user,
 )
 from utils.util import generate_random_password
+from models import User
 
 oauth = Blueprint('oauth', __name__)
 
@@ -36,13 +38,13 @@ def auth_users():
 
     create_user = create_new_user(email, name, password)
     if create_user["msg"] == "email already exists":
+        user = User.query.filter_by(email=email).first()
         identity = JWTIdentity(
-            user_id=create_user["user_id"]
+            user_id=user.id
         )
-
+        add_user_in_white_list(str(user.id), user_agent)
+        add_user_login_history(user.id)
         return jsonify(create_jwt_tokens(identity))
-    if create_user["msg"] != "signup success":
-        return jsonify(create_user)
 
     if os.getenv("FLASK_ENV") == "development":
         print(password)  # send password to user email (delete in prod)
@@ -52,7 +54,7 @@ def auth_users():
     if login["msg"] != "ok":
         return jsonify(login)
     add_user_in_white_list(str(login["user_id"]), user_agent)
-    # add_user_login_history(login["user_id"])
+    add_user_login_history(login["user_id"])
 
     identity = JWTIdentity(
         user_id=login["user_id"]
