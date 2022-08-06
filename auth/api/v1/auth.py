@@ -17,7 +17,7 @@ from services.service import (
     check_edit_user_data
 )
 from utils.util import check_logout_user
-
+from utils.ratelimiter import rate_limit
 auth = Blueprint('auth', __name__)
 
 
@@ -137,7 +137,6 @@ def logout_users():
 
     return jsonify(logout_user(user_id, user_agent, logout_all))
 
-
 @auth.route("/refresh", methods=["POST"])
 @jwt_required(refresh=True)
 @check_logout_user
@@ -160,7 +159,6 @@ def refresh_tokens():
     """
     identity = get_jwt_identity()
     return jsonify(create_jwt_tokens(identity))
-
 
 @auth.route("/profile/login_history", methods=["GET"])
 @jwt_required()
@@ -201,7 +199,6 @@ def profile_user_login_history():
     page_size = request.args.get("page_size") or 10
 
     return jsonify(get_user_login_history(user_id, page_num, page_size))
-
 
 @auth.route("/profile", methods=["PUT"])
 @jwt_required()

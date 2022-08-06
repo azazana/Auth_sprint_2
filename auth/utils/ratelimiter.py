@@ -1,9 +1,10 @@
-import time
-import os
-from flask import request
-from redis import Redis
 import json
+import os
+import time
 
+from flask import request, abort
+from redis import Redis
+from api import redis as redis_limit
 
 def get_identifier():
     return 'ip:' + request.remote_addr
@@ -24,14 +25,35 @@ def over_limit(
         return True
     return False
 
+def rate_limit(limits):
+    def rate_limit_func(func):
+        def over_limit_multi_lua():
+            """Rate limiting for 3 timespans and using 1 call to Redis with Lua script"""
+            conn = redis_limit
+            if not hasattr(conn, 'over_limit_multi_lua'):
+                conn.over_limit_multi_lua = conn.register_script(over_limit_multi_lua_)
 
-def over_limit_multi_lua(conn, limits=[(1, 10), (60, 100), (3600, 250)]):
-    """Rate limiting for 3 timespans and using 1 call to Redis with Lua script"""
-    if not hasattr(conn, 'over_limit_multi_lua'):
-        conn.over_limit_multi_lua = conn.register_script(over_limit_multi_lua_)
+            if conn.over_limit_multi_lua(
+                    keys=get_identifier(), args=[json.dumps(limits), time.time()]):
+                abort(429, description="Too many requests")
+            return func()
+        over_limit_multi_lua.__name__ = func.__name__
+        return over_limit_multi_lua
+    return rate_limit_func
 
-    return conn.over_limit_multi_lua(
-        keys=get_identifier(), args=[json.dumps(limits), time.time()])
+# def decorator_rate_limit(func):
+#     def over_limit_multi_lua(redis, limits=[(1, 10), (60, 100), (3600, 250)]):
+#         """Rate limiting for 3 timespans and using 1 call to Redis with Lua script"""
+#         conn = redis
+#         if not hasattr(conn, 'over_limit_multi_lua'):
+#             conn.over_limit_multi_lua = conn.register_script(over_limit_multi_lua_)
+#
+#         if conn.over_limit_multi_lua(
+#                 keys=get_identifier(), args=[json.dumps(limits), time.time()]):
+#             abort(429, description="Too many requests")
+#         func()
+#
+#     return over_limit_multi_lua
 
 
 over_limit_multi_lua_ = '''

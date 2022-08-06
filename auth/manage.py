@@ -7,7 +7,7 @@ from api.v1.roles import role as role_blueprint
 from api.v1.oauth import oauth as oauth_blueprint
 from models import User, Role
 from utils.partition_user_sign_in import create_partition_year
-from utils.ratelimiter import over_limit_multi_lua
+# from utils.ratelimiter import over_limit_multi_lua
 from flask import abort
 
 app.register_blueprint(auth_blueprint, url_prefix="/auth/v1")
