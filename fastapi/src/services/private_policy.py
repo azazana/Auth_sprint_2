@@ -9,13 +9,16 @@ URL_CHECK_ROLE = os.getenv("URL_CHECK_ROLE", "http://auth:5000/auth/v1/check_rol
 
 async def get_user_roles(token):
     session = aiohttp.ClientSession()
-    async with session.get(
-            URL_CHECK_ROLE,
-            headers={'Authorization': f'Bearer {token}'}
-    ) as response:
-        roles = await response.json()
-        await session.close()
-        return roles
+    try:
+        async with session.get(
+                URL_CHECK_ROLE,
+                headers={'Authorization': f'Bearer {token}'}
+        ) as response:
+            roles = await response.json()
+            await session.close()
+            return roles
+    except:
+        return ['guest', ]
 
 
 def check_role_user(role: str):
