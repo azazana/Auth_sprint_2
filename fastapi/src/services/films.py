@@ -30,6 +30,7 @@ class FilmService(BaseService):
             role: str = None,
             person_id: str = None,
             genre_id: str = None,
+            premium: int = 0,
             **kwargs
     ):
         """
@@ -43,6 +44,7 @@ class FilmService(BaseService):
         :param genre_id: 2 вариант работы
         :param role: 3 вариант работы
         :param person_id: 3 вариант работы
+        :param premium: premium)
         :return: Генератор по Фильмам
         """
         if pagination:
@@ -57,7 +59,7 @@ class FilmService(BaseService):
         if genre_id is not None:
             body["query"] = self._get_query_films_list(path="genres", query_id=genre_id)
         if search is not None:
-            body["query"] = self._get_query_films_search(search=search)
+            body["query"] = self._get_query_films_search2(search=search, premium=premium)
         if role and person_id:
             body["query"] = self._get_query_films_list(query_id=person_id, path=role)
 

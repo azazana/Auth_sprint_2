@@ -3,10 +3,11 @@ from flask_jwt_extended import jwt_required
 from api.authorize import authorize
 from utils.ratelimiter import rate_limit
 from services.service import (create_new_role,
-                      get_role_service, delete_role_service,
-                      create_user_role, get_roles_service,
-                      delete_user_role_service,get_user_role_service
-                      )
+                              get_role_service, delete_role_service,
+                              create_user_role, get_roles_service,
+                              delete_user_role_service, get_user_role_service,
+                              get_user_id_in_jwt_token, get_user_roles
+                              )
 #
 role = Blueprint('role', __name__)
 #
@@ -258,3 +259,30 @@ def get_user_role() -> Response:
     """
     name_user = request.args.get('name_user')
     return jsonify(eqrls=get_user_role_service(name_user))
+
+
+@role.route('/check_roles', methods=['GET'])
+@jwt_required()
+def check_user_role() -> Response:
+    """check user's roles
+       check user's roles
+       Return user's roles
+       ---
+       parameters:
+          - in: header
+            name: Authorization
+            required: true
+            type: string
+            description: Authorization token
+       responses:
+         200:
+           description: user's roles
+           schema:
+             id: json_msg
+           properties:
+             msg:
+               type: list
+               description: message
+    """
+    user_id = get_user_id_in_jwt_token()
+    return jsonify(get_user_roles(user_id))

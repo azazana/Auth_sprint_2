@@ -14,6 +14,7 @@ CREATE TABLE IF NOT EXISTS content.film_work (
     creation_date DATE,
     file_path TEXT,
     rating FLOAT,
+    premium BOOLEAN,
     type_id uuid NOT NULL,
     created timestamp with time zone,
     modified timestamp with time zone

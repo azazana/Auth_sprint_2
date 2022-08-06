@@ -6,7 +6,7 @@ from models.input_base import Pagination
 from models.input_models import ListForChash, Genre as Genre_input
 from models.output_models import Genre
 from services.genres import GenreService, get_genre_service
-
+from services.private_policy import check_role_user
 router = APIRouter()
 ES_INDEX_NAME = ESIndexName.genre.value
 NOT_FOUND_TEXT = NotFoundText.genre.value
@@ -17,8 +17,10 @@ NOT_FOUND_TEXT = NotFoundText.genre.value
     response_model=list[Genre],
     summary="Список всех жанров"
 )
+@check_role_user('admin')
 async def genres_list(
         request: Request,
+        token: str,
         genre_service: GenreService = Depends(get_genre_service),
         pagination: Pagination = Depends()
 ) -> list[Genre]:

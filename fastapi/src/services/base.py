@@ -73,6 +73,7 @@ class BaseService:
     @staticmethod
     def _get_query_films_search(search: str) -> dict:
         return {
+
             "multi_match": {
                 "query": search,
                 "fields": [
@@ -84,6 +85,31 @@ class BaseService:
                 ],
                 "fuzziness": "auto",
             }
+        }
+
+    @staticmethod
+    def _get_query_films_search2(search, premium: int) -> dict:
+        return {
+            "bool": {
+                  "must": {
+                    "multi_match": {
+                        "query": search,
+                        "fields": [
+                            "title",
+                            "description",
+                            "directors_names",
+                            "writers_names",
+                            "actors_names",
+                        ],
+                        "fuzziness": "auto",
+                    },
+                  },
+                  "filter": {
+                    "term": {
+                      "premium": premium
+                    }
+                  }
+                }
         }
 
     @staticmethod

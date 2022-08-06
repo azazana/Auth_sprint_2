@@ -180,3 +180,8 @@ def get_user_role_service(name_user):
         user = User.query.filter_by(name=name_user).first()
         return [iter.serialize() for iter in user.roles]
     return Msg(msg='Please enter name of user')
+
+
+def get_user_roles(user_id: str) -> list[str]:
+    user = User.query.filter_by(id=user_id).first()
+    return [role.name for role in user.roles]

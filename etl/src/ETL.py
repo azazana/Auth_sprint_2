@@ -3,6 +3,7 @@ import logging
 import os
 import time
 from logging import config
+import random
 
 from MyElasticsearch import MyElasticsearch
 from MyPostgres import MyPostgres
@@ -23,6 +24,13 @@ class PersonRole:
         self.WRITER = "writer"
 
 
+def random_premium() -> bool:
+    if random.randint(1, 100) > 50:
+        return True
+    else:
+        return False
+
+
 def transform_data_pg_in_es(index: str, data: list[dict]) -> list[dict]:
     person = PersonRole()
     actions = [
@@ -33,7 +41,7 @@ def transform_data_pg_in_es(index: str, data: list[dict]) -> list[dict]:
             "title": item["title"],
             "description": item["description"],
             "imdb_rating": item["rating"],
-            "premium": item["premium"],
+            "premium": 1,
             "genres": [
                 {"id": g["genre_id"], "name": g["name"]}
                 for g in item["genres"]

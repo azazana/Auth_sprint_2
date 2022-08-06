@@ -7,6 +7,7 @@ from models.input_base import Pagination
 from models.input_models import ListForChash, Film as Film_input
 from models.output_models import Film, FilmShort
 from services.films import FilmService, get_film_service
+from services.private_policy import get_user_roles
 
 router = APIRouter()
 ES_INDEX_NAME = ESIndexName.film.value
@@ -61,6 +62,7 @@ async def films_list(
 )
 async def films_search(
         request: Request,
+        token: str,
         film_service: FilmService = Depends(get_film_service),
         query: Optional[str] = None,
         pagination: Pagination = Depends()
@@ -72,6 +74,12 @@ async def films_search(
 
     **return**: Фильмы в коротком формате (id, title, imdb_rating)
     """
+    roles = await get_user_roles(token)
+    if "admin" in roles:
+        premium = 1
+    else:
+        premium = 0
+
     response = [
         FilmShort(**film.dict())
         async for film in film_service.get_films(
@@ -80,6 +88,7 @@ async def films_search(
             url=str(request.url),
             model=ListForChash,
             index=ES_INDEX_NAME,
+            premium=premium
         )
     ]
     if not response:
