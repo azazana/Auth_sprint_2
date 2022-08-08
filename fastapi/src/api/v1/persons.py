@@ -19,13 +19,13 @@ NOT_FOUND_TEXT = NotFoundText.person.value
     response_model=list[FilmShort],
     response_model_exclude_none=True,
     summary="Список фильмов в которых учавствовала персона",
-    response_description="Фильмы в коротком формате (id, title, imdb_rating)"
+    response_description="Фильмы в коротком формате (id, title, imdb_rating)",
 )
 async def person_films_list(
-        request: Request,
-        person_id: str,
-        pagination: Pagination = Depends(),
-        film_service: FilmService = Depends(get_film_service)
+    request: Request,
+    person_id: str,
+    pagination: Pagination = Depends(),
+    film_service: FilmService = Depends(get_film_service),
 ) -> list[FilmShort]:
     """
     - **person_id**: UUID Персоны
@@ -41,28 +41,28 @@ async def person_films_list(
                 url=str(request.url),
                 model=ListForChash,
                 index=ES_INDEX_NAME,
-                role=role.value
+                role=role.value,
             )
             if FilmShort(**film.dict()) not in response
         ]
     if not response:
         raise HTTPException(status_code=HTTPStatus.NOT_FOUND, detail=NOT_FOUND_TEXT)
     p_from = (pagination.page_number - 1) * pagination.page_size
-    return response[p_from:p_from + pagination.page_size]
+    return response[p_from : p_from + pagination.page_size]
 
 
 @router.get(
     "/search/",
     response_model=list[Person],
     summary="Полнотекстовый поиск персон",
-    response_description="Персоны с списом фильмов в котором она участвовала"
+    response_description="Персоны с списом фильмов в котором она участвовала",
 )
 async def persons_search(
-        request: Request,
-        persons_service: PersonService = Depends(get_person_service),
-        film_service: FilmService = Depends(get_film_service),
-        query: Optional[str] = None,
-        pagination: Pagination = Depends()
+    request: Request,
+    persons_service: PersonService = Depends(get_person_service),
+    film_service: FilmService = Depends(get_film_service),
+    query: Optional[str] = None,
+    pagination: Pagination = Depends(),
 ) -> list[Person]:
     """
     - **query**: текст для запроса для поиска
@@ -73,11 +73,11 @@ async def persons_search(
     """
     response = []
     async for person in persons_service.search_persons(
-            query=query,
-            pagination=pagination,
-            url=str(request.url),
-            index=ES_INDEX_NAME,
-            model=ListForChash
+        query=query,
+        pagination=pagination,
+        url=str(request.url),
+        index=ES_INDEX_NAME,
+        model=ListForChash,
     ):
         # Можно ли одним запросом вытаскивать фильмы по всем ролям
         film_ids_list = []
@@ -87,7 +87,7 @@ async def persons_search(
                 index=ES_INDEX_NAME,
                 model=ListForChash,
                 person_id=person.id,
-                role=role.value
+                role=role.value,
             )
         film_ids_list = list(set(film_ids_list))
         response.append(
@@ -102,13 +102,13 @@ async def persons_search(
     "/{person_id}/",
     response_model=list[Person],
     summary="Подробная инфомация о персоне",
-    response_description="Список фильмов для каждой роли персоны в которых она участвовала"
+    response_description="Список фильмов для каждой роли персоны в которых она участвовала",
 )
 async def person_details(
-        person_id: str,
-        request: Request,
-        persons_service: PersonService = Depends(get_person_service),
-        film_service: FilmService = Depends(get_film_service),
+    person_id: str,
+    request: Request,
+    persons_service: PersonService = Depends(get_person_service),
+    film_service: FilmService = Depends(get_film_service),
 ) -> list[Person]:
     """
     - **person_id**: UUID Персоны
@@ -116,10 +116,7 @@ async def person_details(
     **return**: Список фильмов для каждой роли персоны в которых она участвовала
     """
     async for person in persons_service.get_model_by_id_from_elastic(
-            model_id=person_id,
-            url=str(request.url),
-            model=Person,
-            index=ES_INDEX_NAME
+        model_id=person_id, url=str(request.url), model=Person, index=ES_INDEX_NAME
     ):
 
         if not person:
@@ -134,7 +131,7 @@ async def person_details(
                     role=role.value,
                     url=str(request.url),
                     model=Person,
-                    index=ES_INDEX_NAME
+                    index=ES_INDEX_NAME,
                 ),
             )
             for role in PersonRole

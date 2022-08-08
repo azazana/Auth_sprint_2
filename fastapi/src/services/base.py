@@ -20,7 +20,6 @@ class AsyncCacheStorage(ABC):
 
 
 class RedisCacheStorage(AsyncCacheStorage):
-
     def __init__(self, redis: Redis, expire: int):
         self.redis = redis
         self.ex = expire
@@ -45,11 +44,7 @@ def cache(storage: AsyncCacheStorage):
                 py_list.data = [
                     data
                     async for data in func(
-                        self,
-                        model=model,
-                        index=index,
-                        url=url,
-                        **kwargs
+                        self, model=model, index=index, url=url, **kwargs
                     )
                 ]
                 await storage.set(str_key, py_list.json())
@@ -62,6 +57,7 @@ def cache(storage: AsyncCacheStorage):
                     yield item
 
         return wrapper
+
     return async_cache
 
 
@@ -104,11 +100,7 @@ class BaseService:
             }
         }
         if not premium:
-            response["bool"]["filter"] = {
-                "term": {
-                  "premium": premium
-                }
-            }
+            response["bool"]["filter"] = {"term": {"premium": premium}}
         return response
 
     @staticmethod
@@ -137,8 +129,8 @@ class BaseService:
 
     @staticmethod
     def _get_query_config(
-            pagination: Pagination = Pagination(),
-            sort: str = None,
+        pagination: Pagination = Pagination(),
+        sort: str = None,
     ) -> dict:
         body = dict()
 
@@ -158,16 +150,11 @@ class BaseService:
 
     @cache(
         storage=RedisCacheStorage(
-            redis=Redis(host=settings.REDIS_HOST),
-            expire=settings.CACHE_EXPIRE
+            redis=Redis(host=settings.REDIS_HOST), expire=settings.CACHE_EXPIRE
         )
     )
     async def get_model_by_id_from_elastic(
-            self,
-            index: str,
-            model_id: str,
-            model,
-            url: Optional[str] = None
+        self, index: str, model_id: str, model, url: Optional[str] = None
     ):
         try:
             doc = await self.elastic.get(index, model_id)

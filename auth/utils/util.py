@@ -17,6 +17,7 @@ def check_logout_user(fn):
         if not redis.sismember(name=user_id, value=user_agent):
             return jsonify({"msg": "sorry you are logout go to login"})
         return fn(*args, **kwargs)
+
     return wrapper
 
 
@@ -26,13 +27,15 @@ def is_superuser():
         @wraps(f)
         def decorated_func(*args, **kwargs):
             # todo how to find current user?
-            user_id = get_jwt_identity()['id']
+            user_id = get_jwt_identity()["id"]
             # todo get user id
             current_user = User.query.filter_by(id=user_id).first()
             if current_user.superuser:
                 return f(*args, **kwargs)
-            return jsonify({"msg": 'User does not have permission'})
+            return jsonify({"msg": "User does not have permission"})
+
         return decorated_func
+
     return decorator
 
 

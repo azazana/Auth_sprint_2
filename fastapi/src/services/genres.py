@@ -18,15 +18,10 @@ ES_INDEX_NAME = ESIndexName.genre.value
 class GenreService(BaseService):
     @cache(
         storage=RedisCacheStorage(
-            redis=Redis(host=settings.REDIS_HOST),
-            expire=settings.CACHE_EXPIRE
+            redis=Redis(host=settings.REDIS_HOST), expire=settings.CACHE_EXPIRE
         )
     )
-    async def get_genres_from_elastic(
-            self,
-            pagination: Pagination,
-            **kwargs
-    ):
+    async def get_genres_from_elastic(self, pagination: Pagination, **kwargs):
         body = self._get_query_config(pagination=pagination)
 
         response = await self.elastic.search(index=ES_INDEX_NAME, body=body)
@@ -36,7 +31,7 @@ class GenreService(BaseService):
 
 @lru_cache()
 def get_genre_service(
-        redis: Redis = Depends(get_redis),
-        elastic: AsyncElasticsearch = Depends(get_elastic),
+    redis: Redis = Depends(get_redis),
+    elastic: AsyncElasticsearch = Depends(get_elastic),
 ) -> GenreService:
     return GenreService(redis, elastic)

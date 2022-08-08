@@ -7,6 +7,7 @@ from api.v1.roles import role as role_blueprint
 from api.v1.oauth import oauth as oauth_blueprint
 from models import User, Role
 from utils.partition_user_sign_in import create_partition_year
+
 # from utils.ratelimiter import over_limit_multi_lua
 from flask import abort
 
@@ -24,7 +25,7 @@ def create_db():
 
 
 @cli.command("create_partition_year")
-@click.argument('year')
+@click.argument("year")
 def create_db(year):
     with db.engine.connect() as con:
         create_partition_year(connection=con, year=year)
@@ -34,20 +35,15 @@ def create_db(year):
 @cli.command("create_superuser")
 def create_superuser():
 
-    role = Role(
-        name="admin"
-    )
+    role = Role(name="admin")
     db.session.add(role)
     db.session.commit()
     user = User(
-        name="admin",
-        email="admin@admin.ru",
-        password=generate_password_hash("admin")
+        name="admin", email="admin@admin.ru", password=generate_password_hash("admin")
     )
     user.roles = [role]
     db.session.add(user)
     db.session.commit()
-
 
 
 # @app.before_request
@@ -56,5 +52,5 @@ def create_superuser():
 #         abort(429, description="Too many requests")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     cli()

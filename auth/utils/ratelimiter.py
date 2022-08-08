@@ -8,16 +8,16 @@ from redis import Redis
 
 
 def get_identifier():
-    return 'ip:' + request.remote_addr
+    return "ip:" + request.remote_addr
 
 
 def over_limit(
-        conn: Redis,
-        duration=int(os.getenv("RATE_LIMIT_DURATION", 60)),
-        limit=int(os.getenv("RATE_LIMIT_LIMIT", 20))
+    conn: Redis,
+    duration=int(os.getenv("RATE_LIMIT_DURATION", 60)),
+    limit=int(os.getenv("RATE_LIMIT_LIMIT", 20)),
 ):
     """Simple rate limit in 1 time duration"""
-    bucket = ':%i:%i ' % (duration, time.time() // duration)
+    bucket = ":%i:%i " % (duration, time.time() // duration)
     identifier = get_identifier()
     key = identifier + bucket
     count = conn.incr(key)
@@ -32,11 +32,12 @@ def rate_limit(limits):
         def over_limit_multi_lua():
             """Rate limiting for 3 timespans and using 1 call to Redis with Lua script"""
             conn = redis_limit
-            if not hasattr(conn, 'over_limit_multi_lua'):
+            if not hasattr(conn, "over_limit_multi_lua"):
                 conn.over_limit_multi_lua = conn.register_script(over_limit_multi_lua_)
 
             if conn.over_limit_multi_lua(
-                    keys=get_identifier(), args=[json.dumps(limits), time.time()]):
+                keys=get_identifier(), args=[json.dumps(limits), time.time()]
+            ):
                 abort(429, description="Too many requests")
             return func()
 
@@ -61,7 +62,7 @@ def rate_limit(limits):
 #     return over_limit_multi_lua
 
 
-over_limit_multi_lua_ = '''
+over_limit_multi_lua_ = """
 local limits = cjson.decode(ARGV[1])
 local now = tonumber(ARGV[2])
 for i, limit in ipairs(limits) do
@@ -75,4 +76,4 @@ for i, limit in ipairs(limits) do
     end
 end
 return 0
-'''
+"""

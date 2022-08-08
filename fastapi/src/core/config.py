@@ -19,7 +19,6 @@ class Settings(BaseSettings):
     ELASTIC_PORT: int = 9200
     ELASTIC_HOST: str = "127.0.0.1"
 
-
     CACHE_EXPIRE: int = 60 * 5  # 5 минут
 
     BASE_DIR: str = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -27,4 +26,3 @@ class Settings(BaseSettings):
 
 settings = Settings()
 logger.info(settings.dict())
-

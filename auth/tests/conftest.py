@@ -19,86 +19,82 @@ class HTTPResponse:
     status: int
 
 
-@pytest.fixture(scope='session')
+@pytest.fixture(scope="session")
 async def session():
     session = aiohttp.ClientSession()
     yield session
     await session.close()
 
 
-
 @pytest.fixture
 def make_post_request(session):
     async def inner(
-            method: str,
-            params: Optional[dict] = None,
-            headers: Optional[dict] = None
+        method: str, params: Optional[dict] = None, headers: Optional[dict] = None
     ) -> HTTPResponse:
         params = params or {}
         headers = headers or {}
-        url = 'http://' + SERVICE_URL + method
+        url = "http://" + SERVICE_URL + method
         async with session.post(url, params=params, headers=headers) as response:
             return HTTPResponse(
                 body=await response.json(),
                 headers=response.headers,
                 status=response.status,
             )
+
     return inner
 
 
 @pytest.fixture
 def make_get_request(session):
     async def inner(
-            method: str,
-            params: Optional[dict] = None,
-            headers: Optional[dict] = None
+        method: str, params: Optional[dict] = None, headers: Optional[dict] = None
     ) -> HTTPResponse:
         params = params or {}
         headers = headers or {}
-        url = 'http://' + SERVICE_URL + method
+        url = "http://" + SERVICE_URL + method
         async with session.get(url, params=params, headers=headers) as response:
             return HTTPResponse(
                 body=await response.json(),
                 headers=response.headers,
                 status=response.status,
             )
+
     return inner
 
 
 @pytest.fixture
 def make_put_request(session):
     async def inner(
-            method: str,
-            params: Optional[dict] = None,
-            headers: Optional[dict] = None
+        method: str, params: Optional[dict] = None, headers: Optional[dict] = None
     ) -> HTTPResponse:
         params = params or {}
         headers = headers or {}
-        url = 'http://' + SERVICE_URL + method
+        url = "http://" + SERVICE_URL + method
         async with session.put(url, params=params, headers=headers) as response:
             return HTTPResponse(
                 body=await response.json(),
                 headers=response.headers,
                 status=response.status,
             )
+
     return inner
+
 
 @pytest.fixture
 def make_delete_request(session):
     async def inner(
-            method: str,
-            params: Optional[dict] = None,
-            headers: Optional[dict] = None
+        method: str, params: Optional[dict] = None, headers: Optional[dict] = None
     ) -> HTTPResponse:
         params = params or {}
         headers = headers or {}
-        url = 'http://' + SERVICE_URL + method
+        url = "http://" + SERVICE_URL + method
         async with session.delete(url, params=params, headers=headers) as response:
             return HTTPResponse(
                 body=await response.json(),
                 headers=response.headers,
                 status=response.status,
             )
+
     return inner
 
 

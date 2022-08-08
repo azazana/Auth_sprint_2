@@ -19,14 +19,14 @@ NOT_FOUND_TEXT = NotFoundText.film.value
     response_model=list[FilmShort],
     response_model_exclude_none=True,
     summary="Список всех фильмов",
-    response_description="Фильмы в коротком формате (id, title, imdb_rating)"
+    response_description="Фильмы в коротком формате (id, title, imdb_rating)",
 )
 async def films_list(
-        request: Request,
-        film_service: FilmService = Depends(get_film_service),
-        sort: Optional[str] = None,
-        genre_id: Optional[str] = Query(default=None, alias="filter[genre]"),
-        pagination: Pagination = Depends()
+    request: Request,
+    film_service: FilmService = Depends(get_film_service),
+    sort: Optional[str] = None,
+    genre_id: Optional[str] = Query(default=None, alias="filter[genre]"),
+    pagination: Pagination = Depends(),
 ) -> list[FilmShort]:
     """
     Список всех фильмов поддерживает фильтрацию по UUID жанра, и сортировку по рейтингу imdb_rating
@@ -58,14 +58,14 @@ async def films_list(
     response_model=list[FilmShort],
     response_model_exclude_none=True,
     summary="Полнотекстовый поиск фильмов",
-    response_description="Фильмы в коротком формате (id, title, imdb_rating)"
+    response_description="Фильмы в коротком формате (id, title, imdb_rating)",
 )
 async def films_search(
-        request: Request,
-        token: str,
-        film_service: FilmService = Depends(get_film_service),
-        query: Optional[str] = None,
-        pagination: Pagination = Depends()
+    request: Request,
+    token: str,
+    film_service: FilmService = Depends(get_film_service),
+    query: Optional[str] = None,
+    pagination: Pagination = Depends(),
 ) -> list[FilmShort]:
     """
     - **query**: текст для запроса для поиска
@@ -88,7 +88,7 @@ async def films_search(
             url=str(request.url),
             model=ListForChash,
             index=ES_INDEX_NAME,
-            premium=premium
+            premium=premium,
         )
     ]
     if not response:
@@ -101,11 +101,12 @@ async def films_search(
     response_model=Film,
     response_model_exclude_none=True,
     summary="Подробная информация о фильме",
-    response_description="Подробная информация о фильме"
+    response_description="Подробная информация о фильме",
 )
 async def film_details(
-        film_id: str, request: Request,
-        film_service: FilmService = Depends(get_film_service)
+    film_id: str,
+    request: Request,
+    film_service: FilmService = Depends(get_film_service),
 ) -> Film:
     """
     - **film_id**: UUID Фильма
@@ -113,10 +114,10 @@ async def film_details(
     **return**: Подробная информация о фильме
     """
     async for film in film_service.get_model_by_id_from_elastic(
-            model_id=film_id,
-            model=Film_input,
-            index=ES_INDEX_NAME,
-            url=str(request.url),
+        model_id=film_id,
+        model=Film_input,
+        index=ES_INDEX_NAME,
+        url=str(request.url),
     ):
         if not film:
             raise HTTPException(status_code=HTTPStatus.NOT_FOUND, detail=NOT_FOUND_TEXT)

@@ -14,20 +14,20 @@ from services.service import (
 from utils.util import generate_random_password
 from models import User
 
-oauth = Blueprint('oauth', __name__)
+oauth = Blueprint("oauth", __name__)
 
 
-@oauth.route('/oauth/callback', methods=['GET'])
+@oauth.route("/oauth/callback", methods=["GET"])
 def auth_users():
     """login user by Oauth info
-        login user by Oauth info
-        If all ok create and return access and refresh jwt tokens
-        ---
-        responses:
-          200:
-            description: create access and refresh tokens after Oauth
-            schema:
-              id: jwt_tokens
+    login user by Oauth info
+    If all ok create and return access and refresh jwt tokens
+    ---
+    responses:
+      200:
+        description: create access and refresh tokens after Oauth
+        schema:
+          id: jwt_tokens
     """
     user_scope = get_user_scope(request.url)
 
@@ -39,9 +39,7 @@ def auth_users():
     create_user = create_new_user(email, name, password)
     if create_user["msg"] == "email already exists":
         user = User.query.filter_by(email=email).first()
-        identity = JWTIdentity(
-            user_id=user.id
-        )
+        identity = JWTIdentity(user_id=user.id)
         add_user_in_white_list(str(user.id), user_agent)
         add_user_login_history(user.id)
         return jsonify(create_jwt_tokens(identity))
@@ -56,21 +54,19 @@ def auth_users():
     add_user_in_white_list(str(login["user_id"]), user_agent)
     add_user_login_history(login["user_id"])
 
-    identity = JWTIdentity(
-        user_id=login["user_id"]
-    )
+    identity = JWTIdentity(user_id=login["user_id"])
 
     return jsonify(create_jwt_tokens(identity))
 
 
-@oauth.route('/oauth', methods=['GET'])
+@oauth.route("/oauth", methods=["GET"])
 def get_oauth_link():
     """get link to oauth users
-        get link to oauth users
-        ---
-        responses:
-          200:
-            description: get link to oauth users
+    get link to oauth users
+    ---
+    responses:
+      200:
+        description: get link to oauth users
     """
     msg = Msg(msg=f"Please go here and authorize: {authorization_url}")
     return jsonify(msg)

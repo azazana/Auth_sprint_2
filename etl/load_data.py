@@ -12,6 +12,7 @@ logger = logging.getLogger()
 
 PAGE_SIZE = 5000
 
+
 def maping_type_filmwork(data: list, pg_conn: _connection) -> list:
     """Сопоставляет строковое значение type (таблица film_work) из базы Sqlite,
     с ID в базе Postgres или создаёт новый тип при необходимости,

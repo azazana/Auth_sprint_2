@@ -18,16 +18,10 @@ ES_INDEX_NAME = ESIndexName.person.value
 class PersonService(BaseService):
     @cache(
         storage=RedisCacheStorage(
-            redis=Redis(host=settings.REDIS_HOST),
-            expire=settings.CACHE_EXPIRE
+            redis=Redis(host=settings.REDIS_HOST), expire=settings.CACHE_EXPIRE
         )
     )
-    async def search_persons(
-            self,
-            pagination: Pagination,
-            query: str = None,
-            **kwargs
-    ):
+    async def search_persons(self, pagination: Pagination, query: str = None, **kwargs):
         body = self._get_query_config(pagination=pagination)
 
         if query is not None:
@@ -39,7 +33,7 @@ class PersonService(BaseService):
 
 @lru_cache()
 def get_person_service(
-        redis: Redis = Depends(get_redis),
-        elastic: AsyncElasticsearch = Depends(get_elastic),
+    redis: Redis = Depends(get_redis),
+    elastic: AsyncElasticsearch = Depends(get_elastic),
 ) -> PersonService:
     return PersonService(redis, elastic)

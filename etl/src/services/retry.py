@@ -56,7 +56,9 @@ def retry(
                     continue
             except exceptions.ConnectionError:
                 logger.info(f"Try reconnect {x}/{max_tries}")
-                logger.info("Elasticsearch Connection [InterfaceError or OperationalError]")
+                logger.info(
+                    "Elasticsearch Connection [InterfaceError or OperationalError]"
+                )
                 logger.info(f"Idle for {t} seconds")
                 time.sleep(t)
                 try:

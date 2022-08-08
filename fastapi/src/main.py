@@ -37,15 +37,15 @@ async def shutdown():
     await elastic.es.close()
 
 
-app.include_router(films.router,
-                   prefix=f"/api/v1/{URLIndexName.film.value}",
-                   tags=["films"])
-app.include_router(genres.router,
-                   prefix=f"/api/v1/{URLIndexName.genre.value}",
-                   tags=["genres"])
-app.include_router(persons.router,
-                   prefix=f"/api/v1/{URLIndexName.person.value}",
-                   tags=["persons"])
+app.include_router(
+    films.router, prefix=f"/api/v1/{URLIndexName.film.value}", tags=["films"]
+)
+app.include_router(
+    genres.router, prefix=f"/api/v1/{URLIndexName.genre.value}", tags=["genres"]
+)
+app.include_router(
+    persons.router, prefix=f"/api/v1/{URLIndexName.person.value}", tags=["persons"]
+)
 
 if __name__ == "__main__":
     uvicorn.run(

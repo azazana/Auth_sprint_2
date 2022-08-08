@@ -8,8 +8,8 @@ class Base(BaseModel):
 
 
 class ElasticLoad(BaseModel):
-    id_for_es: str = Field(None, alias='_id')
-    index_for_es: str = Field(None, alias='_index')
+    id_for_es: str = Field(None, alias="_id")
+    index_for_es: str = Field(None, alias="_index")
 
 
 class Genre(Base):

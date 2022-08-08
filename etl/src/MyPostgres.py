@@ -136,7 +136,7 @@ class MyPostgres:
             )
         )
         film_work_list_id = [str(f["id"]) for f in self.my_cursor.fetchall()]
-        logger_root.info(len(film_work_list_id), '  ', table)
+        logger_root.info(len(film_work_list_id), "  ", table)
         return film_work_list_id
 
     @retry
@@ -157,9 +157,7 @@ class MyPostgres:
         return set(modified_film_work_id_list)
 
     @retry
-    def select_genres_data(
-            self, modified: datetime, all_data: bool = False
-    ) -> _cursor:
+    def select_genres_data(self, modified: datetime, all_data: bool = False) -> _cursor:
         """Выбирает все небходимые данные из Postgres:
         2 вариата работы:
             1) all_data = True -> выбирает все жанры
@@ -172,7 +170,7 @@ class MyPostgres:
         if all_data:
             add_query = ""
         else:
-            add_query = ("WHERE g.modified > '{}'".format(modified))
+            add_query = "WHERE g.modified > '{}'".format(modified)
         self.my_cursor.execute(
             " \
                 SELECT \
@@ -180,13 +178,15 @@ class MyPostgres:
                     g.name \
                 FROM content.genre g \
                 {};\
-            ".format(add_query)
+            ".format(
+                add_query
+            )
         )
         return self.my_cursor
 
     @retry
     def select_persons_data(
-            self, modified: datetime, all_data: bool = False
+        self, modified: datetime, all_data: bool = False
     ) -> _cursor:
         """Выбирает все небходимые данные из Postgres:
         2 вариата работы:
@@ -200,7 +200,7 @@ class MyPostgres:
         if all_data:
             add_query = ""
         else:
-            add_query = ("WHERE p.modified > '{}'".format(modified))
+            add_query = "WHERE p.modified > '{}'".format(modified)
         self.my_cursor.execute(
             " \
                 SELECT \
@@ -208,6 +208,8 @@ class MyPostgres:
                     p.full_name \
                 FROM content.person p \
                 {};\
-            ".format(add_query)
+            ".format(
+                add_query
+            )
         )
         return self.my_cursor

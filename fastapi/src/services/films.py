@@ -18,20 +18,19 @@ ES_INDEX_NAME = ESIndexName.film.value
 class FilmService(BaseService):
     @cache(
         storage=RedisCacheStorage(
-            redis=Redis(host=settings.REDIS_HOST),
-            expire=settings.CACHE_EXPIRE
+            redis=Redis(host=settings.REDIS_HOST), expire=settings.CACHE_EXPIRE
         )
     )
     async def get_films(
-            self,
-            pagination: Pagination = None,
-            search: str = None,
-            sort: str = None,
-            role: str = None,
-            person_id: str = None,
-            genre_id: str = None,
-            premium: int = 0,
-            **kwargs
+        self,
+        pagination: Pagination = None,
+        search: str = None,
+        sort: str = None,
+        role: str = None,
+        person_id: str = None,
+        genre_id: str = None,
+        premium: int = 0,
+        **kwargs
     ):
         """
         Фукция общая с 3мя вариантами работы,
@@ -48,10 +47,7 @@ class FilmService(BaseService):
         :return: Генератор по Фильмам
         """
         if pagination:
-            body = self._get_query_config(
-                pagination=pagination,
-                sort=sort
-            )
+            body = self._get_query_config(pagination=pagination, sort=sort)
         else:
             body = dict()
 
@@ -59,7 +55,9 @@ class FilmService(BaseService):
         if genre_id is not None:
             body["query"] = self._get_query_films_list(path="genres", query_id=genre_id)
         if search is not None:
-            body["query"] = self._get_query_films_search2(search=search, premium=premium)
+            body["query"] = self._get_query_films_search2(
+                search=search, premium=premium
+            )
         if role and person_id:
             body["query"] = self._get_query_films_list(query_id=person_id, path=role)
 
@@ -68,24 +66,17 @@ class FilmService(BaseService):
             yield Film(**data["_source"])
 
     async def get_role_film_ids_list(
-            self,
-            person_id: str,
-            role: str,
-            **kwargs
+        self, person_id: str, role: str, **kwargs
     ) -> list[str]:
         return [
             film.id
-            async for film in self.get_films(
-                person_id=person_id,
-                role=role,
-                **kwargs
-            )
+            async for film in self.get_films(person_id=person_id, role=role, **kwargs)
         ]
 
 
 @lru_cache()
 def get_film_service(
-        redis: Redis = Depends(get_redis),
-        elastic: AsyncElasticsearch = Depends(get_elastic),
+    redis: Redis = Depends(get_redis),
+    elastic: AsyncElasticsearch = Depends(get_elastic),
 ) -> FilmService:
     return FilmService(redis, elastic)

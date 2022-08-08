@@ -3,7 +3,7 @@ import datetime
 
 def create_partition_year(connection, year: int) -> None:
     year = int(year)  # for console run
-    for y in (year, year+1, year-1):
+    for y in (year, year + 1, year - 1):
         connection.execute(
             f"""CREATE TABLE IF NOT EXISTS "users_sign_in_{y}" 
             PARTITION OF "users_sign_in" 
@@ -12,7 +12,7 @@ def create_partition_year(connection, year: int) -> None:
 
 
 def create_partition(target, connection, year: int = 0, **kw) -> None:
-    """ creating partition by user_sign_in """
+    """creating partition by user_sign_in"""
     if not year:
         year = datetime.datetime.now()
         year = year.year

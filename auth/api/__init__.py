@@ -15,15 +15,12 @@ from opentelemetry.exporter.jaeger.thrift import JaegerExporter
 
 SWAGGER_TEMPLATE = {
     "securityDefinitions": {
-        "session_token": {
-            "type": "apiKey", "name": "Authorization", "in": "header"
-        }
+        "session_token": {"type": "apiKey", "name": "Authorization", "in": "header"}
     }
 }
 
 app = Flask(__name__)
-app.config.from_object(os.environ.get('FLASK_CONFIG')
-                       or 'config.DevelopmentConfig')
+app.config.from_object(os.environ.get("FLASK_CONFIG") or "config.DevelopmentConfig")
 
 
 db = SQLAlchemy(app)
@@ -52,8 +49,8 @@ redis = Redis(host=os.getenv("REDIS_HOST") or "0.0.0.0")
 #             )
 #         )
 #     )
-    # Чтобы видеть трейсы в консоли
-    # trace.get_tracer_provider().add_span_processor(BatchSpanProcessor(ConsoleSpanExporter()))
+# Чтобы видеть трейсы в консоли
+# trace.get_tracer_provider().add_span_processor(BatchSpanProcessor(ConsoleSpanExporter()))
 
 
 # configure_tracer()

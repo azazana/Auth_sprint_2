@@ -1,18 +1,22 @@
 from typing import Optional
 
-from flask_jwt_extended import get_jwt_identity, create_access_token, create_refresh_token
+from flask_jwt_extended import (
+    get_jwt_identity,
+    create_access_token,
+    create_refresh_token,
+)
 from werkzeug.security import check_password_hash, generate_password_hash
 
 from api import redis, db
+
 # <<<<<<< HEAD:auth/services.py
 # from datamodels import JWTTokens, JWTIdentity, Msg, LoginHistory
 from models import User, UserLoginHistory, Role
 from services.datamodels import JWTTokens, JWTIdentity, Msg, LoginHistory
 
 
-
 def get_user_id_in_jwt_token() -> str:
-    return get_jwt_identity()['user_id']
+    return get_jwt_identity()["user_id"]
 
 
 def add_user_in_white_list(user_id: str, user_agent: str) -> None:
@@ -37,7 +41,7 @@ def add_user_login_history(user_id: str) -> None:
 def create_jwt_tokens(identity: JWTIdentity) -> JWTTokens:
     return JWTTokens(
         access_token=create_access_token(identity),
-        refresh_token=create_refresh_token(identity)
+        refresh_token=create_refresh_token(identity),
     )
 
 
@@ -47,10 +51,7 @@ def create_new_user(email: str, name: str, password: str) -> Msg:
         if user:
             return Msg(msg="email already exists")
         new_user = User(
-            email=email,
-            name=name,
-            password=generate_password_hash(password),
-            roles=[]
+            email=email, name=name, password=generate_password_hash(password), roles=[]
         )
         db.session.add(new_user)
         db.session.commit()
@@ -68,11 +69,11 @@ def logout_user(user_id: str, user_agent: str, logout_all: Optional[str]) -> Msg
 
 
 def get_user_login_history(user_id: str, page_num: int, page_size: int) -> LoginHistory:
-    history_list = UserLoginHistory.query.filter_by(user_id=user_id).paginate(
-        int(page_num),
-        int(page_size),
-        True
-    ).items
+    history_list = (
+        UserLoginHistory.query.filter_by(user_id=user_id)
+        .paginate(int(page_num), int(page_size), True)
+        .items
+    )
     history_list = [h.datestamp for h in history_list]
     return LoginHistory(history=history_list)
 
@@ -112,36 +113,36 @@ def create_new_role(name):
     if name:
         role = Role.query.filter_by(name=name).first()
         if role:
-            return Msg(msg=f'The role has already existed')
+            return Msg(msg=f"The role has already existed")
         new_role = Role(name=name)
 
         db.session.add(new_role)
         db.session.commit()
-        return Msg(msg=f'The role {name} has created')
+        return Msg(msg=f"The role {name} has created")
     else:
-        Msg(msg='please enter name')
+        Msg(msg="please enter name")
 
 
 def get_role_service(name):
     if name:
         role = Role.query.filter_by(name=name).first()
         if not role:
-            return Msg(msg='Error in finding role')
-        return Msg(msg=f'Role {name}')
+            return Msg(msg="Error in finding role")
+        return Msg(msg=f"Role {name}")
     else:
-        Msg(msg='please enter name')
+        Msg(msg="please enter name")
 
 
 def delete_role_service(name):
     if name:
         role = Role.query.filter_by(name=name).first()
         if not role:
-            return Msg(msg='Error in finding role')
+            return Msg(msg="Error in finding role")
         db.session.delete(role)
         db.session.commit()
-        return Msg(msg=f'The role {name} has deleted')
+        return Msg(msg=f"The role {name} has deleted")
     else:
-        Msg(msg='please enter name')
+        Msg(msg="please enter name")
 
 
 def create_user_role(name_user, name_role):
@@ -150,15 +151,15 @@ def create_user_role(name_user, name_role):
         role = Role.query.filter_by(name=name_role).first()
         user.roles.append(role)
         db.session.commit()
-        return Msg(msg='The role has edited to user')
+        return Msg(msg="The role has edited to user")
     else:
-        return Msg(msg='Please, enter user name and role name')
+        return Msg(msg="Please, enter user name and role name")
 
 
 def get_roles_service():
     roles = Role.query.all()
     if not roles:
-        return Msg(msg='no created roles')
+        return Msg(msg="no created roles")
     return [iter.serialize() for iter in roles]
 
 
@@ -169,17 +170,17 @@ def delete_user_role_service(name_user, name_role):
         if role in user.roles:
             user.roles.remove(role)
         else:
-            return Msg(msg=f'The user has not had {name_role} role')
+            return Msg(msg=f"The user has not had {name_role} role")
         db.session.commit()
-        return Msg(msg='The role has deleted to user')
-    return Msg(msg='Please print name of user and name of role')
+        return Msg(msg="The role has deleted to user")
+    return Msg(msg="Please print name of user and name of role")
 
 
 def get_user_role_service(name_user):
     if name_user:
         user = User.query.filter_by(name=name_user).first()
         return [iter.serialize() for iter in user.roles]
-    return Msg(msg='Please enter name of user')
+    return Msg(msg="Please enter name of user")
 
 
 def get_user_roles(user_id: str) -> list[str]:

@@ -2,8 +2,7 @@ import time
 from aioredis import Redis
 import os
 
-redis = Redis(host=os.getenv("REDIS_HOST"),
-              port=int(os.getenv("REDIS_PORT")))
+redis = Redis(host=os.getenv("REDIS_HOST"), port=int(os.getenv("REDIS_PORT")))
 
 while not redis.ping():
     time.sleep(3)

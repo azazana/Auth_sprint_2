@@ -2,6 +2,7 @@ import sys
 import logging
 
 from elasticsearch import AsyncElasticsearch, exceptions, helpers
+
 if sys.path[0].startswith("/home/"):
     sys.path.append("....")
     from src.models.enums import ESIndexName
@@ -110,7 +111,9 @@ class MyElasticsearch:
             },
         }
         try:
-            await self.es.indices.create(index=ESIndexName.film.value, body=request_body)
+            await self.es.indices.create(
+                index=ESIndexName.film.value, body=request_body
+            )
         except exceptions.RequestError:
             logger_root.info("Index already exists")
 
@@ -126,7 +129,9 @@ class MyElasticsearch:
             },
         }
         try:
-            await self.es.indices.create(index=ESIndexName.genre.value, body=request_body)
+            await self.es.indices.create(
+                index=ESIndexName.genre.value, body=request_body
+            )
         except exceptions.RequestError:
             logger_root.info("Index already exists")
 
@@ -142,7 +147,9 @@ class MyElasticsearch:
             },
         }
         try:
-            await self.es.indices.create(index=ESIndexName.person.value, body=request_body)
+            await self.es.indices.create(
+                index=ESIndexName.person.value, body=request_body
+            )
         except exceptions.RequestError:
             logger_root.info("Index already exists")
 
@@ -153,8 +160,4 @@ class MyElasticsearch:
         """Save data in elastic, bulk query.
 
         :param data: data list for query"""
-        await helpers.async_bulk(
-            client=self.es,
-            actions=data,
-            refresh=True
-        )
+        await helpers.async_bulk(client=self.es, actions=data, refresh=True)

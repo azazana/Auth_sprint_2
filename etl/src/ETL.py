@@ -18,6 +18,7 @@ logger = logging.getLogger()
 
 class PersonRole:
     """Модель ролей участников фильмов/видео."""
+
     def __init__(self):
         self.ACTOR = "actor"
         self.DIRECTOR = "director"
@@ -43,8 +44,7 @@ def transform_data_pg_in_es(index: str, data: list[dict]) -> list[dict]:
             "imdb_rating": item["rating"],
             "premium": random_premium(),
             "genres": [
-                {"id": g["genre_id"], "name": g["name"]}
-                for g in item["genres"]
+                {"id": g["genre_id"], "name": g["name"]} for g in item["genres"]
             ],
             "directors_names": [
                 p["person_name"]
@@ -52,7 +52,8 @@ def transform_data_pg_in_es(index: str, data: list[dict]) -> list[dict]:
                 if p["person_role"] == person.DIRECTOR
             ],
             "actors_names": [
-                p["person_name"] for p in item["persons"]
+                p["person_name"]
+                for p in item["persons"]
                 if p["person_role"] == person.ACTOR
             ],
             "writers_names": [
@@ -199,10 +200,11 @@ if __name__ == "__main__":
     time.sleep(20)
     # init index
     elastic = MyElasticsearch(
-        hosts=os.environ.get("ELASTIC_HOST")+':'+os.environ.get("ELASTIC_PORT"))
-    elastic.create_index_movies('movies')
-    elastic.create_index_genres('genres')
-    elastic.create_index_persons('persons')
+        hosts=os.environ.get("ELASTIC_HOST") + ":" + os.environ.get("ELASTIC_PORT")
+    )
+    elastic.create_index_movies("movies")
+    elastic.create_index_genres("genres")
+    elastic.create_index_persons("persons")
     # TODO: не дублирующийся сервис (при случайном двойном запуске)
     while True:
         main_loop_ETL(elastic=elastic, sleep=120)

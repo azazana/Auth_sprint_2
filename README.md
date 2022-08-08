@@ -1,3 +1,4 @@
+[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 # Проектная работа 7 спринта
 
 https://github.com/azazana/Auth_sprint_2
