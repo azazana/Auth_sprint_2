@@ -22,6 +22,22 @@ class BaseConfig:
     MAIL_PASSWORD = os.environ.get("MAIL_PASSWORD") or "secret_pass"
     MAIL_DEFAULT_SENDER = MAIL_USERNAME
 
+    GOOGLE_CLIENT_ID = os.getenv(
+        "GOOGLE_CLIENT_ID",
+        "720205541120-shsq0bbpdsm9d3l1vnre7aa1h5go0jrj.apps.googleusercontent.com",
+    )
+    GOOGLE_CLIENT_SECRET = os.getenv(
+        "GOOGLE_CLIENT_SECRET", "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"
+    )
+    GOOGLE_REDIRECT_URI = os.getenv("REDIRECT_URI", "http://127.0.0.1:5000/auth/v1/oauth/callback/google")
+    GOOGLE_AUTHORIZATION_BASE_URL = "https://accounts.google.com/o/oauth2/v2/auth"
+    GOOGLE_TOKEN_URL = "https://www.googleapis.com/oauth2/v4/token"
+    GOOGLE_SCOPE = [
+        "openid",
+        "https://www.googleapis.com/auth/userinfo.email",
+        "https://www.googleapis.com/auth/userinfo.profile",
+    ]
+
 
 class DevelopmentConfig(BaseConfig):
     DEBUG = True

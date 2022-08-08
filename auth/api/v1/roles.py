@@ -148,13 +148,6 @@ def get_roles() -> Response:
           description: message
     """
     return jsonify(get_roles_service())
-    # try:
-    #     roles = Role.query.all()
-    #     if not roles:
-    #         return jsonify({"msg": 'no roles'})
-    # except Exception:
-    #     return jsonify({"msg": 'Error in finding role'})
-    # return jsonify(eqrls=[iter.serialize() for iter in roles])
 
 
 @role.route("/user_roles", methods=["PUT"])

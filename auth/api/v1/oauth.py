@@ -2,12 +2,11 @@ import os
 
 from flask import Blueprint, request, jsonify
 from services.datamodels import JWTIdentity, Msg
+from services.oauth_providers import match_oauth_provider
 from utils.mail import send_mail
-from services.oauth_google import get_user_scope, authorization_url
 from services.service import (
     add_user_in_white_list,
     add_user_login_history,
-    check_login_user,
     create_jwt_tokens,
     create_new_user,
     login_user_get_token,
@@ -18,19 +17,25 @@ from models import User
 oauth = Blueprint("oauth", __name__)
 
 
-@oauth.route("/oauth/callback", methods=["GET"])
-def auth_users():
+@oauth.route("/oauth/callback/<provider>", methods=["GET"])
+def auth_users(provider):
     """login user by Oauth info
     login user by Oauth info
     If all ok create and return access and refresh jwt tokens
     ---
+    parameters:
+      - in: path
+        name: provider
+        required: true
+        type: string
     responses:
       200:
         description: create access and refresh tokens after Oauth
         schema:
           id: jwt_tokens
     """
-    user_scope = get_user_scope(request.url)
+    provider = match_oauth_provider(provider)
+    user_scope = provider.get_user_scope(request.url)
 
     email = user_scope["email"]
     name = user_scope["name"]
@@ -52,14 +57,21 @@ def auth_users():
     return login_user_get_token(email, password, user_agent)
 
 
-@oauth.route("/oauth", methods=["GET"])
-def get_oauth_link():
+@oauth.route("/oauth/<provider>", methods=["GET"])
+def get_oauth_link(provider):
     """get link to oauth users
     get link to oauth users
     ---
+    parameters:
+      - in: path
+        name: provider
+        required: true
+        type: string
     responses:
       200:
         description: get link to oauth users
     """
-    msg = Msg(msg=f"Please go here and authorize: {authorization_url}")
+    provider = match_oauth_provider(provider)
+    auth_url = provider.get_authorization_url()
+    msg = Msg(msg=f"Please go here and authorize: {auth_url}")
     return jsonify(msg)
