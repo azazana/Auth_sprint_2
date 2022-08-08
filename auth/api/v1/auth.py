@@ -3,9 +3,6 @@ from flask_jwt_extended import get_jwt_identity, jwt_required
 
 from services.service import (
     get_user_id_in_jwt_token,
-    add_user_in_white_list,
-    check_login_user,
-    add_user_login_history,
     create_jwt_tokens,
     create_new_user,
     logout_user,

@@ -7,10 +7,9 @@ from flask_jwt_extended import (
     create_access_token,
     create_refresh_token,
 )
-# <<<<<<< HEAD:auth/services.py
-# from datamodels import JWTTokens, JWTIdentity, Msg, LoginHistory
 from models import User, UserLoginHistory, Role
 from services.datamodels import JWTTokens, JWTIdentity, Msg, LoginHistory
+from services.exceptions import LoginError
 from werkzeug.security import check_password_hash, generate_password_hash
 
 
@@ -22,19 +21,30 @@ def add_user_in_white_list(user_id: str, user_agent: str) -> None:
     redis.sadd(user_id, user_agent)
 
 
-def check_login_user(email: str, password: str) -> dict:
+def check_login_user(email: str, password: str) -> str:
     user = User.query.filter_by(email=email).first()
     if not user:
-        return {"msg": "email is not registered"}
+        raise LoginError("email is not registered")
     elif not check_password_hash(user.password, password):
-        return {"msg": "please check you password"}
+        raise LoginError("please check you password")
     else:
-        return {"msg": "ok", "user_id": user.id}
+        return str(user.id)
 
 
 def add_user_login_history(user_id: str) -> None:
     db.session.add(UserLoginHistory(user_id=user_id))
     db.session.commit()
+
+
+def login_user_get_token(email, password, user_agent):
+    user_id = check_login_user(email, password)
+
+    add_user_in_white_list(user_id, user_agent)
+    add_user_login_history(user_id)
+
+    identity = JWTIdentity(user_id=user_id)
+
+    return jsonify(create_jwt_tokens(identity))
 
 
 def create_jwt_tokens(identity: JWTIdentity) -> JWTTokens:
@@ -186,15 +196,3 @@ def get_user_roles(user_id: str) -> list[str]:
     user = User.query.filter_by(id=user_id).first()
     return [role.name for role in user.roles]
 
-
-def login_user_get_token(email, password, user_agent):
-    login = check_login_user(email, password)
-    if login["msg"] != "ok":
-        return jsonify(login)
-
-    add_user_in_white_list(str(login["user_id"]), user_agent)
-    add_user_login_history(login["user_id"])
-
-    identity = JWTIdentity(user_id=login["user_id"])
-
-    return jsonify(create_jwt_tokens(identity))
