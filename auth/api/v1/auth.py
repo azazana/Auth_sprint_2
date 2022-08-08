@@ -1,7 +1,7 @@
 from flask import Blueprint, request, jsonify
 from flask_jwt_extended import get_jwt_identity, jwt_required
 
-from services.service import (
+from services.service_login import (
     get_user_id_in_jwt_token,
     create_jwt_tokens,
     create_new_user,

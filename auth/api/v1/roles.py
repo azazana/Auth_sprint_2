@@ -2,7 +2,7 @@ from flask import Response, Blueprint, jsonify, request
 from flask_jwt_extended import jwt_required
 from api.authorize import authorize
 from utils.ratelimiter import rate_limit
-from services.service import (
+from services.service_role import (
     create_new_role,
     get_role_service,
     delete_role_service,
@@ -10,10 +10,9 @@ from services.service import (
     get_roles_service,
     delete_user_role_service,
     get_user_role_service,
-    get_user_id_in_jwt_token,
     get_user_roles,
 )
-
+from services.service_login import get_user_id_in_jwt_token
 #
 role = Blueprint("role", __name__)
 #

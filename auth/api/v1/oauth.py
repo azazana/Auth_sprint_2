@@ -4,7 +4,7 @@ from flask import Blueprint, request, jsonify
 from services.datamodels import JWTIdentity, Msg
 from services.oauth_providers import match_oauth_provider
 from utils.mail import send_mail
-from services.service import (
+from services.service_login import (
     add_user_in_white_list,
     add_user_login_history,
     create_jwt_tokens,
