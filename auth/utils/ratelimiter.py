@@ -42,6 +42,7 @@ def rate_limit(limits):
             return func()
 
         over_limit_multi_lua.__name__ = func.__name__
+        over_limit_multi_lua.__doc__ = func.__doc__
         return over_limit_multi_lua
 
     return rate_limit_func
