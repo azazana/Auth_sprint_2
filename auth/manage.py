@@ -1,15 +1,13 @@
 import click
 from flask.cli import FlaskGroup
 from werkzeug.security import generate_password_hash
-from api import app, db, redis
+from api import app, db
 from api.v1.auth import auth as auth_blueprint
 from api.v1.roles import role as role_blueprint
 from api.v1.oauth import oauth as oauth_blueprint
 from models import User, Role
 from utils.partition_user_sign_in import create_partition_year
 
-# from utils.ratelimiter import over_limit_multi_lua
-from flask import abort
 
 app.register_blueprint(auth_blueprint, url_prefix="/auth/v1")
 app.register_blueprint(oauth_blueprint, url_prefix="/auth/v1")
@@ -45,7 +43,7 @@ def create_superuser():
     db.session.add(user)
     db.session.commit()
 
-
+# if need common rate limiter
 # @app.before_request
 # def rate_limiter():
 #     if over_limit_multi_lua(redis):
