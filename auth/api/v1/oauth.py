@@ -10,6 +10,7 @@ from services.service import (
     check_login_user,
     create_jwt_tokens,
     create_new_user,
+    login_user_get_token,
 )
 from utils.util import generate_random_password
 from models import User
@@ -48,15 +49,7 @@ def auth_users():
         print(password)  # send password to user email (delete in prod)
     send_mail("You password in Movies website", email, password)
 
-    login = check_login_user(email, password)
-    if login["msg"] != "ok":
-        return jsonify(login)
-    add_user_in_white_list(str(login["user_id"]), user_agent)
-    add_user_login_history(login["user_id"])
-
-    identity = JWTIdentity(user_id=login["user_id"])
-
-    return jsonify(create_jwt_tokens(identity))
+    return login_user_get_token(email, password, user_agent)
 
 
 @oauth.route("/oauth", methods=["GET"])

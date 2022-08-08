@@ -1,7 +1,6 @@
 from flask import Blueprint, request, jsonify
 from flask_jwt_extended import get_jwt_identity, jwt_required
 
-from services.datamodels import JWTIdentity
 from services.service import (
     get_user_id_in_jwt_token,
     add_user_in_white_list,
@@ -12,6 +11,7 @@ from services.service import (
     logout_user,
     get_user_login_history,
     check_edit_user_data,
+    login_user_get_token,
 )
 from utils.util import check_logout_user
 from utils.ratelimiter import rate_limit
@@ -51,17 +51,8 @@ def login_users():
     email = request.args["email"]
     password = request.args["password"]
     user_agent = request.headers.get("User-Agent")
+    return login_user_get_token(email, password, user_agent)
 
-    login = check_login_user(email, password)
-    if login["msg"] != "ok":
-        return jsonify(login)
-
-    add_user_in_white_list(str(login["user_id"]), user_agent)
-    add_user_login_history(login["user_id"])
-
-    identity = JWTIdentity(user_id=login["user_id"])
-
-    return jsonify(create_jwt_tokens(identity))
 
 
 @auth.route("/signup", methods=["POST"])

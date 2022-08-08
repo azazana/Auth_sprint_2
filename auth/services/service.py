@@ -1,18 +1,17 @@
 from typing import Optional
 
+from api import redis, db
+from flask import jsonify
 from flask_jwt_extended import (
     get_jwt_identity,
     create_access_token,
     create_refresh_token,
 )
-from werkzeug.security import check_password_hash, generate_password_hash
-
-from api import redis, db
-
 # <<<<<<< HEAD:auth/services.py
 # from datamodels import JWTTokens, JWTIdentity, Msg, LoginHistory
 from models import User, UserLoginHistory, Role
 from services.datamodels import JWTTokens, JWTIdentity, Msg, LoginHistory
+from werkzeug.security import check_password_hash, generate_password_hash
 
 
 def get_user_id_in_jwt_token() -> str:
@@ -71,8 +70,8 @@ def logout_user(user_id: str, user_agent: str, logout_all: Optional[str]) -> Msg
 def get_user_login_history(user_id: str, page_num: int, page_size: int) -> LoginHistory:
     history_list = (
         UserLoginHistory.query.filter_by(user_id=user_id)
-        .paginate(int(page_num), int(page_size), True)
-        .items
+            .paginate(int(page_num), int(page_size), True)
+            .items
     )
     history_list = [h.datestamp for h in history_list]
     return LoginHistory(history=history_list)
@@ -186,3 +185,16 @@ def get_user_role_service(name_user):
 def get_user_roles(user_id: str) -> list[str]:
     user = User.query.filter_by(id=user_id).first()
     return [role.name for role in user.roles]
+
+
+def login_user_get_token(email, password, user_agent):
+    login = check_login_user(email, password)
+    if login["msg"] != "ok":
+        return jsonify(login)
+
+    add_user_in_white_list(str(login["user_id"]), user_agent)
+    add_user_login_history(login["user_id"])
+
+    identity = JWTIdentity(user_id=login["user_id"])
+
+    return jsonify(create_jwt_tokens(identity))
