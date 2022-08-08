@@ -24,7 +24,7 @@ async def test_signup_email_exists(make_post_request):
         f"/auth/v1/signup?email={TEST_EMAIL}&password={TEST_PASSWORD}&name={TEST_NAME}"
     )
 
-    assert response.status == HTTPStatus.OK
+    assert response.status == HTTPStatus.BAD_REQUEST
     # assert response.body == {'msg': 'email already exists'}
     assert response.body.get("msg") == "email already exists"
 
@@ -79,7 +79,7 @@ async def test_edit_userdata_error(make_put_request, make_post_request):
         f"/auth/v1/profile?password={TEST_PASSWORD}",
         headers={"Authorization": f"Bearer {_TEST_ACCESS_TOKEN}"},
     )
-    assert response.status == HTTPStatus.OK
+    assert response.status == HTTPStatus.BAD_REQUEST
     assert response.body["msg"] == "password must be different from the current"
 
 

@@ -58,14 +58,14 @@ def create_new_user(email: str, name: str, password: str) -> Msg:
     if email and name and password:
         user = User.query.filter_by(email=email).first()
         if user:
-            return Msg(msg="email already exists")
+            raise LoginError("email already exists")
         new_user = User(
             email=email, name=name, password=generate_password_hash(password), roles=[]
         )
         db.session.add(new_user)
         db.session.commit()
         return Msg(msg="signup success")
-    return Msg(msg="please enter email, name, password")
+    raise LoginError("please enter email, name, password")
 
 
 def logout_user(user_id: str, user_agent: str, logout_all: Optional[str]) -> Msg:
@@ -91,20 +91,20 @@ def check_edit_user_data(user_id: str, email: str, name: str, password: str) -> 
     user = User.query.filter_by(id=user_id).first()
     if password:
         if check_password_hash(user.password, password):
-            return Msg(msg="password must be different from the current")
+            raise LoginError("password must be different from the current")
         else:
             user.password = generate_password_hash(password)
     if email:
         _user = User.query.filter_by(email=email).first()
         if _user:
-            return Msg(msg="email already exists")
+            raise LoginError("email already exists")
         if user.email == email:
-            return Msg(msg="email must be different from the current")
+            raise LoginError("email must be different from the current")
         else:
             user.email = email
     if name:
         if user.name == name:
-            return Msg(msg="name must be different from the current")
+            raise LoginError("name must be different from the current")
         else:
             user.name = name
     if not password and not email and not name:

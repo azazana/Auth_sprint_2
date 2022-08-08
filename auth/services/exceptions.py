@@ -1,8 +1,8 @@
-from flask import jsonify
 from api import app
+from flask import jsonify
 
 
-class OauthProviderError(Exception):
+class AuthError(Exception):
     status_code = 400
 
     def __init__(self, message, status_code=None, payload=None):
@@ -18,20 +18,16 @@ class OauthProviderError(Exception):
         return rv
 
 
-class LoginError(Exception):
-    status_code = 400
+class OauthProviderError(AuthError):
+    pass
 
-    def __init__(self, message, status_code=None, payload=None):
-        Exception.__init__(self)
-        self.message = message
-        if status_code is not None:
-            self.status_code = status_code
-        self.payload = payload
 
-    def to_dict(self):
-        rv = dict(self.payload or ())
-        rv['msg'] = self.message
-        return rv
+class LoginError(AuthError):
+    pass
+
+
+class RoleError(AuthError):
+    pass
 
 
 @app.errorhandler(OauthProviderError)
